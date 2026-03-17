@@ -1,14 +1,7 @@
-import torch
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 import os
 
 app = Flask(__name__)
-
-model_name = "sarahai/ru-sum"  
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
 text = """Исследователи Тюменского индустриального университета принимают участие в мероприятии – спутнике Конгресса молодых ученых, 
 проходящем в Анапе. Целями форума являются отбор лучших технологических решений для ликвидации последствий разлива нефтепродуктов на Черноморском побережье, 
@@ -37,15 +30,9 @@ text = """Исследователи Тюменского индустриаль
 последствий экологических катастроф. Представленные разработки обладают высоким потенциалом для применения на практике и могут внести значительный вклад в сохранение уникальной экосистемы 
 Черноморского побережья. Центр по внешним коммуникациям ТИУ"""
 
-device = torch.device("cpu")
-
-input_ids = tokenizer(text, return_tensors="pt").input_ids.to(device)
-outputs = model.generate(input_ids, max_length=100, min_length=50, length_penalty=2.0, num_beams=4, early_stopping=True)
-summary = tokenizer.decode(outputs[0], skip_special_tokens=True)
-
 @app.route('/')
 def index():
-    return summary
+    return text
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
